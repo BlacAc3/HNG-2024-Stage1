@@ -2,7 +2,10 @@
     "builds": [{
         "src": "my_api/wsgi.py",
         "use": "@vercel/python",
-        "config": { "maxLambdaSize": "15mb" }
+        "config": { 
+            "maxLambdaSize": "15mb",
+            "installCommand": "pip install -r requirements.txt"
+        }
     }],
     "routes": [
         {
