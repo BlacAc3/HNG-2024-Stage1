@@ -29,9 +29,9 @@ IP_ACCESS_TOKEN = env("IP_ACCESS_TOKEN")
 WEATHER_API_KEY = env("WEATHER_API_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", ".vercel.app"]
 
 # Application definition
 
