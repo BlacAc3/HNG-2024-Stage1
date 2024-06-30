@@ -8,18 +8,21 @@ IP_ACCESS_TOKEN=settings.IP_ACCESS_TOKEN
 
 # Create your views here.
 def hello(request):
+	location = "Not found"
 	if request.method == "GET":
-		visitor_name = request.GET["visitor_name"]
+		visitor_name = request.GET["visitor_name"].strip('"')
 		ip_address = request.META.get('REMOTE_ADDR')
-		location = get_location(ip_address)[0]
 		greeting = f"Hello, {visitor_name}!, the temperature is 11 degrees Celcius in {location}"
-		
+		try:
+			location = get_location(ip_address)[0]
+		except:
+			pass
 		data = {
-			"client_ip":f"{ip_address}", 
-			"location" : f"{location}",
-			"greeting" : f"{greeting}"
+			"client_ip":ip_address, 
+			"location" : location,
+			"greeting" : greeting
 		}
-		return JsonResponse(data)
+		return JsonResponse(data, safe=False)
 
 	else:
 		return JsonResponse({"error":"An Error occured"})
