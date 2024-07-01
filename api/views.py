@@ -33,19 +33,7 @@ def hello(request):
 		return JsonResponse({"error":"An Error occured"})
 	
 
-# def get_location(ip_address) -> list:
-# 	url = f'http://ipinfo.io/{ip_address}?token={IP_ACCESS_TOKEN}'
-# 	try:
-# 		response = requests.get(url)
-# 		data = response.json()
-# 		city = data["city"]
-# 		coordinates = data["loc"]
-# 		lat, lon = coordinates.split(",")
-# 		loc = [lat, lon]
-# 		return [city, loc]
-# 	except:
-# 		print("Error")
-# 		return JsonResponse({"Error":"Location not found"})
+
 
 def get_location(ip_address):
     g = geocoder.ip(ip_address)
