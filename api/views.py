@@ -12,19 +12,28 @@ def hello(request):
 	if request.method == "GET":
 		visitor_name = request.GET["visitor_name"].strip('"')
 		ip_address = request.META.get('REMOTE_ADDR')
+
 		try:
 			location = get_location(ip_address)
 		except:
-			pass
-		temp = get_weather(location[1][0], location[1][1])
-		
-		greeting = f"Hello, {visitor_name}!, the temperature is {temp} degrees Celcius in {location[0]}"
+			location = None
+
+		if location != None:
+			city = location[0]
+			lat = location[1][0]
+			lon = location[1][1]
+			temp = get_weather(lat,lon)
+		else:
+			city="Not Found"
+			temp = 11
+
+		greeting = f"Hello, {visitor_name}!, the temperature is {temp} degrees Celcius in {city}"
 		data = {
 			"client_ip":ip_address, 
-			"location" : location,
+			"location" : city,
 			"greeting" : greeting
 		}
-		return JsonResponse(data, safe=False)
+		return JsonResponse(data)
 
 	else:
 		return JsonResponse({"error":"An Error occured"})
