@@ -1,27 +1,21 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 import requests
-from django.conf import settings 
+import geocoder
+from django.conf import settings
+
 WEATHER_API_KEY=settings.WEATHER_API_KEY
 IP_ACCESS_TOKEN=settings.IP_ACCESS_TOKEN
 
 
 # Create your views here.
 def hello(request):
-	location = "Not found"
 	if request.method == "GET":
 		visitor_name = request.GET["visitor_name"].strip('"')
 		ip_address = request.META.get('REMOTE_ADDR')
+		city, lat, lon = get_location(ip_address)
 
-		try:
-			location = get_location(ip_address)
-		except:
-			location = None
-
-		if location != None:
-			city = location[0]
-			lat = location[1][0]
-			lon = location[1][1]
+		if city != None:
 			temp = get_weather(lat,lon)
 		else:
 			city="Not Found"
@@ -39,19 +33,30 @@ def hello(request):
 		return JsonResponse({"error":"An Error occured"})
 	
 
-def get_location(ip_address) -> list:
-	url = f'http://ipinfo.io/{ip_address}?token={IP_ACCESS_TOKEN}'
-	try:
-		response = requests.get(url)
-		data = response.json()
-		city = data["city"]
-		coordinates = data["loc"]
-		lat, lon = coordinates.split(",")
-		loc = [lat, lon]
-		return [city, loc]
-	except:
-		print("Error")
-		return JsonResponse({"Error":"Location not found"})
+# def get_location(ip_address) -> list:
+# 	url = f'http://ipinfo.io/{ip_address}?token={IP_ACCESS_TOKEN}'
+# 	try:
+# 		response = requests.get(url)
+# 		data = response.json()
+# 		city = data["city"]
+# 		coordinates = data["loc"]
+# 		lat, lon = coordinates.split(",")
+# 		loc = [lat, lon]
+# 		return [city, loc]
+# 	except:
+# 		print("Error")
+# 		return JsonResponse({"Error":"Location not found"})
+
+def get_location(ip_address):
+    g = geocoder.ip(ip_address)
+    if g.ok:
+        city = g.city
+        lat = g.latlng[0]
+        lon = g.latlng[1]
+        return city, lat, lon
+    else:
+        print("Error in getting location")
+        return None, None, None
 
 def get_weather(lat, lon) -> int:
 	url = f'http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={WEATHER_API_KEY}&units=metric'
