@@ -12,11 +12,13 @@ def hello(request):
 	if request.method == "GET":
 		visitor_name = request.GET["visitor_name"].strip('"')
 		ip_address = request.META.get('REMOTE_ADDR')
-		greeting = f"Hello, {visitor_name}!, the temperature is 11 degrees Celcius in {location}"
 		try:
-			location = get_location(ip_address)[0]
+			location = get_location(ip_address)
 		except:
 			pass
+		temp = get_weather(location[1][0], location[1][1])
+		
+		greeting = f"Hello, {visitor_name}!, the temperature is {temp} degrees Celcius in {location[0]}"
 		data = {
 			"client_ip":ip_address, 
 			"location" : location,
